@@ -5,4 +5,5 @@ module.exports = {
     loader: "custom",
     formats: ["image/avif", "image/webp"],
   },
+  output: "standalone",
 };
