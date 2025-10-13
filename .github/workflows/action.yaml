@@ -2,13 +2,13 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ "master", "main" ]
+    branches: ["master", "main"]
   pull_request:
-    branches: [ "master", "main" ]
+    branches: ["master", "main"]
   schedule:
     - cron: "0 0 * * 1-5" # todos os dias úteis às 00:00
   repository_dispatch:
-    types: [contentful-update] 
+    types: [contentful-update]
 
 jobs:
   npm-install:
