@@ -1,0 +1,90 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "master", "main" ]
+  pull_request:
+    branches: [ "master", "main" ]
+  schedule:
+    - cron: "0 0 * * 1-5" # todos os dias úteis às 00:00
+  repository_dispatch:
+    types: [contentful-update] 
+
+jobs:
+  npm-install:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./tdw-mp1-gustavo-silva
+
+  prettier:
+    runs-on: ubuntu-latest
+    needs: [npm-install]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./tdw-mp1-gustavo-silva
+      - name: Run Prettier
+        run: npm run prettier
+        working-directory: ./tdw-mp1-gustavo-silva
+
+  npm-eslint:
+    runs-on: ubuntu-latest
+    needs: [npm-install]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./tdw-mp1-gustavo-silva
+      - name: Run ESLint
+        run: npm run lint
+        working-directory: ./tdw-mp1-gustavo-silva
+
+  tests:
+    runs-on: ubuntu-latest
+    needs: [npm-install]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./tdw-mp1-gustavo-silva
+      - name: Run tests
+        run: npm test
+        working-directory: ./tdw-mp1-gustavo-silva
+
+  build:
+    runs-on: ubuntu-latest
+    needs: [prettier, npm-eslint, tests]
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./tdw-mp1-gustavo-silva
+      - name: Run build
+        run: npm run build
+        working-directory: ./tdw-mp1-gustavo-silva
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./tdw-mp1-gustavo-silva
+
+      - name: Deploy to Netlify
+        run: npx netlify-cli deploy --site a0707724-c7b2-41cf-90b0-bcc169faf3fc --auth nfp_AHvhVqv7buRCBMYfcpoA5PWiWEbmv7M2f5c --prod
+        working-directory: ./tdw-mp1-gustavo-silva
