@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Install dependencies
         run: npm ci
-        working-directory: ./tdw-mp1-gustavo-silva
+        working-directory: .
 
   prettier:
     runs-on: ubuntu-latest
@@ -28,10 +28,10 @@ jobs:
         uses: actions/checkout@v4
       - name: Install dependencies
         run: npm ci
-        working-directory: ./tdw-mp1-gustavo-silva
+        working-directory: .
       - name: Run Prettier
         run: npm run prettier
-        working-directory: ./tdw-mp1-gustavo-silva
+        working-directory: .
 
   npm-eslint:
     runs-on: ubuntu-latest
@@ -41,10 +41,10 @@ jobs:
         uses: actions/checkout@v4
       - name: Install dependencies
         run: npm ci
-        working-directory: ./tdw-mp1-gustavo-silva
+        working-directory: .
       - name: Run ESLint
         run: npm run lint
-        working-directory: ./tdw-mp1-gustavo-silva
+        working-directory: .
 
   tests:
     runs-on: ubuntu-latest
@@ -54,10 +54,10 @@ jobs:
         uses: actions/checkout@v4
       - name: Install dependencies
         run: npm ci
-        working-directory: ./tdw-mp1-gustavo-silva
+        working-directory: .
       - name: Run tests
         run: npm test
-        working-directory: ./tdw-mp1-gustavo-silva
+        working-directory: .
 
   build:
     runs-on: ubuntu-latest
@@ -68,10 +68,10 @@ jobs:
         uses: actions/checkout@v4
       - name: Install dependencies
         run: npm ci
-        working-directory: ./tdw-mp1-gustavo-silva
+        working-directory: .
       - name: Run build
         run: npm run build
-        working-directory: ./tdw-mp1-gustavo-silva
+        working-directory: .
 
   deploy:
     runs-on: ubuntu-latest
@@ -83,8 +83,8 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-        working-directory: ./tdw-mp1-gustavo-silva
+        working-directory: .
 
       - name: Deploy to Netlify
         run: npx netlify-cli deploy --site a0707724-c7b2-41cf-90b0-bcc169faf3fc --auth nfp_AHvhVqv7buRCBMYfcpoA5PWiWEbmv7M2f5c --prod
-        working-directory: ./tdw-mp1-gustavo-silva
+        working-directory: .
