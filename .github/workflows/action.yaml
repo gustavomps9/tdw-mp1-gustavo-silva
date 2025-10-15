@@ -5,8 +5,8 @@ on:
     branches: ["master", "main"]
   pull_request:
     branches: ["master", "main"]
-  schedule:
-    - cron: "0 0 * * 1-5" # todos os dias úteis às 00:00
+  # schedule:
+  #   - cron: "0 0 * * 1-5" # todos os dias úteis às 00:00
   repository_dispatch:
     types: [contentful-update]
 
