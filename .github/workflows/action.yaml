@@ -69,6 +69,22 @@ jobs:
       - name: Install dependencies
         run: npm ci
         working-directory: .
+
+      - name: Debug environment
+        run: |
+          echo "SPACE ID: $CONTENTFUL_SPACE_ID"
+          echo "ENVIRONMENT: $CONTENTFUL_ENVIRONMENT"
+          echo "ACCESS TOKEN length: ${#CONTENTFUL_ACCESS_TOKEN}"
+          echo "Testing Contentful GraphQL endpoint..."
+          curl -s -o response.txt -w "%{http_code}" \
+            -X POST "https://graphql.contentful.com/content/v1/spaces/${CONTENTFUL_SPACE_ID}/environments/${CONTENTFUL_ENVIRONMENT}" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${CONTENTFUL_ACCESS_TOKEN}" \
+            -d '{"query":"{ postCollection(limit:1){items{title}} }"}'
+          echo ""
+          echo "Response:"
+          cat response.txt
+
       - name: Run build
         run: npm run build
         working-directory: .
