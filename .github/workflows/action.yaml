@@ -86,5 +86,5 @@ jobs:
         working-directory: .
 
       - name: Deploy to Netlify
-        run: npx netlify-cli deploy --site a0707724-c7b2-41cf-90b0-bcc169faf3fc --auth nfp_ykzFGyzyiTSiMyCQcsxNwKSnnfYpzGiy752c --prod
+        run: npx netlify deploy --site ${{ secrets.NETLIFY_SITE_ID }} --auth ${{ secrets.NETLIFY_AUTH_TOKEN }} --prod --dir=.next
         working-directory: .
