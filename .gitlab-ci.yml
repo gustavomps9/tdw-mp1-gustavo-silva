@@ -1,0 +1,100 @@
+image: node:18
+
+stages:
+  - install
+  - format
+  - lint
+  - test
+  - build
+  - deploy
+
+cache:
+  key: ${CI_PROJECT_ID}-${CI_COMMIT_REF_SLUG}
+  paths:
+    - node_modules/
+
+variables:
+  CI_NODE_VERSION: "18"
+
+npm-install:
+  stage: install
+  script:
+    - npm ci
+  cache:
+    key: ${CI_PROJECT_ID}-${CI_COMMIT_REF_SLUG}
+    paths:
+      - node_modules/
+  artifacts:
+    paths:
+      - node_modules/
+    expire_in: 1h
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push" && ($CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "master")'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CONTENTFUL_EVENT == "contentful-update"'
+    - when: never
+
+prettier:
+  stage: format
+  needs: [npm-install]
+  script:
+    - npm run prettier
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_PIPELINE_SOURCE == "push" && ($CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "master")'
+    - when: never
+
+npm-eslint:
+  stage: lint
+  needs: [npm-install]
+  script:
+    - npm run lint
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_PIPELINE_SOURCE == "push" && ($CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "master")'
+    - when: never
+
+tests:
+  stage: test
+  needs: [npm-install]
+  script:
+    - npm test
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_PIPELINE_SOURCE == "push" && ($CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "master")'
+    - when: never
+
+build:
+  stage: build
+  needs: [prettier, npm-eslint, tests]
+  script:
+    - npm run build
+  variables:
+    CONTENTFUL_SPACE_ID: $CONTENTFUL_SPACE_ID
+    CONTENTFUL_ACCESS_TOKEN: $CONTENTFUL_ACCESS_TOKEN
+    CONTENTFUL_PREVIEW_ACCESS_TOKEN: $CONTENTFUL_PREVIEW_ACCESS_TOKEN
+    CONTENTFUL_ENVIRONMENT: $CONTENTFUL_ENVIRONMENT
+  artifacts:
+    paths:
+      - .next/
+    expire_in: 1h
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "master"'
+    - if: '$CONTENTFUL_EVENT == "contentful-update"'
+    - when: never
+
+deploy:
+  stage: deploy
+  needs: [build]
+  script:
+    - npm install -g netlify-cli
+    - npx netlify deploy --prod --dir=.next
+  variables:
+    NETLIFY_AUTH_TOKEN: $NETLIFY_AUTH_TOKEN
+    NETLIFY_SITE_ID: $NETLIFY_SITE_ID
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "master"'
+    - when: never
+  environment:
+    name: production
+    url: https://your-site.netlify.app
