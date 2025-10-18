@@ -16,6 +16,7 @@ cache:
 variables:
   CI_NODE_VERSION: "18"
 
+# 1️⃣ Instala dependências
 npm-install:
   stage: install
   script:
@@ -29,44 +30,57 @@ npm-install:
       - node_modules/
     expire_in: 1h
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "push" && ($CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "master")'
+    - if: '$CI_PIPELINE_SOURCE == "push"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    - if: '$CONTENTFUL_EVENT == "contentful-update"'
-    - when: never
+    - if: '$CI_PIPELINE_SOURCE == "trigger"'
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
 
+# 2️⃣ Formatação com Prettier
 prettier:
   stage: format
   needs: [npm-install]
   script:
     - npm run prettier
   rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    - if: '$CI_PIPELINE_SOURCE == "push" && ($CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "master")'
-    - when: never
+    - if: '$CI_PIPELINE_SOURCE == "trigger"'
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
 
+# 3️⃣ Lint do código
 npm-eslint:
   stage: lint
   needs: [npm-install]
   script:
     - npm run lint
   rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    - if: '$CI_PIPELINE_SOURCE == "push" && ($CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "master")'
-    - when: never
+    - if: '$CI_PIPELINE_SOURCE == "trigger"'
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
 
+# 4️⃣ Testes automáticos
 tests:
   stage: test
   needs: [npm-install]
   script:
     - npm test
   rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    - if: '$CI_PIPELINE_SOURCE == "push" && ($CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "master")'
-    - when: never
+    - if: '$CI_PIPELINE_SOURCE == "trigger"'
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
 
+# 5️⃣ Build do projeto
 build:
   stage: build
-  needs: [prettier, npm-eslint, tests]
+  needs:
+    - job: prettier
+      optional: true
+    - job: npm-eslint
+      optional: true
+    - job: tests
+      optional: true
   script:
     - npm run build
   variables:
@@ -79,22 +93,27 @@ build:
       - .next/
     expire_in: 1h
   rules:
-    - if: '$CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "master"'
-    - if: '$CONTENTFUL_EVENT == "contentful-update"'
-    - when: never
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_PIPELINE_SOURCE == "trigger"'
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
 
+# 6️⃣ Deploy para Netlify
 deploy:
   stage: deploy
-  needs: [build]
+  needs:
+    - job: build
+      optional: true
   script:
     - npm install -g netlify-cli
     - npx netlify deploy --prod --dir=.next
   variables:
     NETLIFY_AUTH_TOKEN: $NETLIFY_AUTH_TOKEN
     NETLIFY_SITE_ID: $NETLIFY_SITE_ID
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "master"'
-    - when: never
   environment:
     name: production
-    url: https://your-site.netlify.app
+    url: https://tdw-mp1-gustavo-silva.netlify.app
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+    - if: '$CI_PIPELINE_SOURCE == "trigger"'
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
