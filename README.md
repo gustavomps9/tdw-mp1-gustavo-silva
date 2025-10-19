@@ -172,3 +172,18 @@ npm run dev
 
 Your blog should be up and running on [http://localhost:3000](http://localhost:3000)! If it doesn't work, post on [GitHub discussions](https://github.com/vercel/next.js/discussions).
 ```
+
+## CI / CD (GitLab)
+
+Este repositório inclui um arquivo de pipeline para GitLab CI: `.gitlab-ci.yml`.
+
+Variáveis de ambiente que devem ser definidas em **Project > Settings > CI / CD > Variables**:
+
+- CONTENTFUL_SPACE_ID
+- CONTENTFUL_ACCESS_TOKEN
+- CONTENTFUL_PREVIEW_ACCESS_TOKEN
+- CONTENTFUL_ENVIRONMENT (opcional)
+- NETLIFY_SITE_ID
+- NETLIFY_AUTH_TOKEN
+
+Para acionar pipelines a partir do Contentful, crie um webhook que chame a API de triggers do GitLab definindo `CONTENTFUL_EVENT=contentful-update`.
