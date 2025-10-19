@@ -31,9 +31,11 @@ const mockContent = {
 describe("Markdown", () => {
   it("renders a heading from Contentful JSON", async () => {
     render(<Markdown content={mockContent} />);
-    
+
     // Procura por um heading com o texto "Título de Teste"
-    const heading = await screen.findByRole("heading", { name: /Título de Teste/i });
+    const heading = await screen.findByRole("heading", {
+      name: /Título de Teste/i,
+    });
     expect(heading).toBeInTheDocument();
   });
 });

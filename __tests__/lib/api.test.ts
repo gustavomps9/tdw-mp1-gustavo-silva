@@ -8,7 +8,7 @@ global.fetch = jest.fn(() =>
           postCollection: { items: [{ slug: "post-1" }] },
         },
       }),
-  })
+  }),
 ) as jest.Mock;
 
 describe("API functions", () => {

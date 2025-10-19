@@ -14,10 +14,7 @@ const config: Config = {
     "^@/(.*)$": "<rootDir>/$1", // para resolver os aliases do tsconfig
   },
 
-  testPathIgnorePatterns: [
-    "<rootDir>/.next/",
-    "<rootDir>/node_modules/",
-  ],
+  testPathIgnorePatterns: ["<rootDir>/.next/", "<rootDir>/node_modules/"],
 
   // Usar ts-jest para TypeScript
   transform: {

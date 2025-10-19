@@ -8,10 +8,10 @@ jest.mock("next/font/google", () => ({
 describe("RootLayout", () => {
   it("renders footer and children correctly", () => {
     render(
-    <RootLayout>
-      <div>Conteúdo principal</div>
-    </RootLayout>
-  );
+      <RootLayout>
+        <div>Conteúdo principal</div>
+      </RootLayout>,
+    );
 
     expect(screen.getByText("Criado com Next.js.")).toBeInTheDocument();
     expect(screen.getByText("Ver exemplo no GitHub")).toBeInTheDocument();

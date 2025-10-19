@@ -29,7 +29,9 @@ describe("Page", () => {
     (api.getAllPosts as jest.Mock).mockResolvedValue([]);
     render(await Page());
     expect(
-      screen.getByText("No posts found. Please check your Contentful configuration.")
+      screen.getByText(
+        "No posts found. Please check your Contentful configuration.",
+      ),
     ).toBeInTheDocument();
   });
 });
