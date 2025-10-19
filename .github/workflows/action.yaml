@@ -35,7 +35,9 @@ jobs:
           node-version: 20
           cache: "npm"
       - name: Run Prettier
-        run: npm run prettier
+        run: |
+          npm ci
+          npm run prettier
 
   # 3️⃣ Lint do código
   npm-eslint:
@@ -48,7 +50,9 @@ jobs:
           node-version: 20
           cache: "npm"
       - name: Run ESLint
-        run: npm run lint
+        run: |
+          npm ci
+          npm run lint
 
   # 4️⃣ Testes automáticos
   tests:
@@ -61,7 +65,9 @@ jobs:
           node-version: 20
           cache: "npm"
       - name: Run tests
-        run: npm test
+        run: |
+          npm ci
+          npm test
 
   # 5️⃣ Build do projeto
   build:
@@ -80,7 +86,9 @@ jobs:
           CONTENTFUL_ACCESS_TOKEN: ${{ secrets.CONTENTFUL_ACCESS_TOKEN }}
           CONTENTFUL_PREVIEW_ACCESS_TOKEN: ${{ secrets.CONTENTFUL_PREVIEW_ACCESS_TOKEN }}
           CONTENTFUL_ENVIRONMENT: ${{ secrets.CONTENTFUL_ENVIRONMENT || 'main' }}
-        run: npm run build
+        run: |
+          npm ci
+          npm run build
 
   # 6️⃣ Deploy para Netlify
   deploy:
